@@ -21,6 +21,7 @@ class WindowBot:
 
     def get_window_rect(self):
         if self.window:
+            # print(f"{self.window.left}, {self.window.top}, {self.window.width}, {self.window.height}")
             return (self.window.left, self.window.top, self.window.width, self.window.height)
         return None
 
