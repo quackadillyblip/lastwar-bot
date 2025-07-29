@@ -132,25 +132,29 @@ if __name__ == "__main__":
                     march_y = 880
                     bot.click_at(march_x, march_y)
                     time.sleep(0.5)
-            kuroi_posts = bot.find_all_templates(os.path.join("templates", "kuroi_like.png"))
-            liked_icons = bot.find_all_templates(os.path.join("templates", "kuroi_liked.png"))
 
-            for x_post, y_post in kuroi_posts:
-                has_like_below = False
+            DAILYLIMIT_REACHED=True #this should be set dynamically by checking if liking worked ...
 
-                for x_liked, y_liked in liked_icons:
-                    if y_liked > y_post:
-                        has_like_below = True
-                        break
+            if not DAILYLIMIT_REACHED:
+                kuroi_posts = bot.find_all_templates(os.path.join("templates", "kuroi_like.png"))
+                liked_icons = bot.find_all_templates(os.path.join("templates", "kuroi_liked.png"))
 
-                if not has_like_below:
-                    x_click = 180
-                    y_click = y_post + 70
-                    # print(f"👍 Clicking like for post at ({x_post}, {y_post}) -> ({x_click}, {y_click})")
-                    # print(f"<3 liked at ({x_liked}, {y_liked})")
-                    bot.click_at(x_click, y_click)
-                    time.sleep(0.5)
+                for x_post, y_post in kuroi_posts:
+                    has_like_below = False
 
-                    # Confirm like
-                    bot.act_on_template("like_button.png")
-                    time.sleep(0.5)
+                    for x_liked, y_liked in liked_icons:
+                        if y_liked > y_post:
+                            has_like_below = True
+                            break
+
+                    if not has_like_below:
+                        x_click = 180
+                        y_click = y_post + 70
+                        # print(f"👍 Clicking like for post at ({x_post}, {y_post}) -> ({x_click}, {y_click})")
+                        # print(f"<3 liked at ({x_liked}, {y_liked})")
+                        bot.click_at(x_click, y_click)
+                        time.sleep(0.5)
+
+                        # Confirm like
+                        bot.act_on_template("like_button.png")
+                        time.sleep(0.5)
