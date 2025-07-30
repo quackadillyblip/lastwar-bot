@@ -5,11 +5,15 @@ import cv2
 import numpy as np
 import time
 import os
+import keyboard
+import sys
+
 
 class WindowBot:
     def __init__(self, window_title):
         self.window_title = window_title
         self.window = self.find_window()
+        self.swipe_direction = "up"  # Alternate each time
 
     def find_window(self):
         for w in gw.getWindowsWithTitle(self.window_title):
@@ -32,7 +36,7 @@ class WindowBot:
             return pyautogui.screenshot(region=(left, top, width, height))
         return None
 
-    def find_template(self, template_path, threshold=0.85):
+    def find_template(self, template_path, threshold=0.9):
         template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
         if template is None:
             # print(f"❌ Template '{template_path}' not found or unreadable.")
@@ -105,11 +109,59 @@ class WindowBot:
         else:
             # print(f"❌ Template '{template_name}' not found.")
             return False
+        
+    def is_mouse_inside_window(self):
+        if self.window:
+            mouse_x, mouse_y = pyautogui.position()
+            left, top, width, height = self.get_window_rect()
+            right = left + width
+            bottom = top + height
+
+            return left <= mouse_x <= right and top <= mouse_y <= bottom
+        return False
+
+
+    def swipe(self, distance=400, duration=0.1):
+        """Alternates swipe direction between up and down each call."""
+        rect = self.get_window_rect()
+        if rect:
+            center_x = rect[0] + rect[2] // 2
+            center_y = rect[1] + rect[3] // 2
+            start_x, start_y = center_x, center_y
+
+            if self.swipe_direction == "up":
+                end_y = center_y - distance
+                print("↕️ Swiping UP")
+                self.swipe_direction = "down"
+            else:
+                end_y = center_y + distance
+                print("↕️ Swiping DOWN")
+                self.swipe_direction = "up"
+
+            end_x = center_x
+
+            print(f"↔️ Swipe from ({start_x}, {start_y}) to ({end_x}, {end_y})")
+            pyautogui.moveTo(start_x, start_y)
+            pyautogui.mouseDown()
+            pyautogui.moveTo(end_x, end_y, duration=duration)
+            pyautogui.mouseUp()
+
+
 
 if __name__ == "__main__":
     bot = WindowBot("Last War-Survival Game")
     if bot.window:
         while True:
+            # Every 10 seconds, perform swipe
+            #if time.time() % 10 < 1:
+            #    bot.click_at(335, 356)
+            #    bot.swipe()
+            #    time.sleep(1)  # Prevent multiple swipes within same second
+            if keyboard.is_pressed("esc") and bot.is_mouse_inside_window():
+                print("🛑 Escape gedrukt binnen venster — script wordt gestopt.")
+                sys.exit()
+
+
             bot.act_on_template("help_button.png")
             bot.act_on_template("survivor_found.png")
             bot.act_on_template("survivor_claim.png", 2)
@@ -120,18 +172,16 @@ if __name__ == "__main__":
                 print("clicked target")
                 bot.click_at(335, 356)
                 print("clicked join")
-                time.sleep(0.5)
+                time.sleep(0.75)
                 bot.act_on_template("march.png")
+                print("clicked march")
                 time.sleep(5)
-                bot.act_on_template("exit.png")
-                
-                
-
 
             if bot.act_on_template("open_dig.png"):
                 time.sleep(0.5)
 
-            if bot.act_on_template("goto_dig.png"):
+
+        #    if bot.act_on_template("goto_dig.png"):
                 time.sleep(0.5)
 
                 # Click join_dig (center of the window)
@@ -168,3 +218,4 @@ if __name__ == "__main__":
                         # Confirm like
                         bot.act_on_template("like_button.png")
                         time.sleep(0.5)
+            
