@@ -113,6 +113,21 @@ if __name__ == "__main__":
             bot.act_on_template("help_button.png")
             bot.act_on_template("survivor_found.png")
             bot.act_on_template("survivor_claim.png", 2)
+
+            #zombie invasion event
+            if bot.act_on_template("target.png"):
+                time.sleep(0.3)
+                print("clicked target")
+                bot.click_at(335, 356)
+                print("clicked join")
+                time.sleep(0.5)
+                bot.act_on_template("march.png")
+                time.sleep(5)
+                bot.act_on_template("exit.png")
+                
+                
+
+
             if bot.act_on_template("open_dig.png"):
                 time.sleep(0.5)
 
@@ -126,12 +141,7 @@ if __name__ == "__main__":
                     join_y = rect[1] + rect[3] // 2
                     bot.click_at(join_x, join_y)
                     time.sleep(0.5)
-
-                    # Click march (horizontal center, fixed y=880)
-                    march_x = rect[0] + rect[2] // 2
-                    march_y = 880
-                    bot.click_at(march_x, march_y)
-                    time.sleep(0.5)
+                    bot.act_on_template("march.png")
 
             DAILYLIMIT_REACHED=True #this should be set dynamically by checking if liking worked ...
 
