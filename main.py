@@ -13,7 +13,6 @@ class WindowBot:
     def __init__(self, window_title):
         self.window_title = window_title
         self.window = self.find_window()
-        self.swipe_direction = "up"  # Alternate each time
 
     def find_window(self):
         for w in gw.getWindowsWithTitle(self.window_title):
@@ -120,8 +119,14 @@ class WindowBot:
             return left <= mouse_x <= right and top <= mouse_y <= bottom
         return False
 
+    def getCenter_x(self):
+        rect = self.get_window_rect()
+        if rect:
+            center_x = rect[0] + rect[2] // 2
+            return center_x
+        return 360 #guess
 
-    def swipe(self, distance=400, duration=0.1):
+    def swipe(self, distance=200, duration=0.1):
         """Alternates swipe direction between up and down each call."""
         rect = self.get_window_rect()
         if rect:
@@ -129,14 +134,9 @@ class WindowBot:
             center_y = rect[1] + rect[3] // 2
             start_x, start_y = center_x, center_y
 
-            if self.swipe_direction == "up":
-                end_y = center_y - distance
-                print("↕️ Swiping UP")
-                self.swipe_direction = "down"
-            else:
-                end_y = center_y + distance
-                print("↕️ Swiping DOWN")
-                self.swipe_direction = "up"
+            end_y = center_y + distance
+            print("↕️ Swiping DOWN")
+            self.swipe_direction = "up"
 
             end_x = center_x
 
@@ -154,28 +154,30 @@ if __name__ == "__main__":
         while True:
             # Every 10 seconds, perform swipe
             #if time.time() % 10 < 1:
-            #    bot.click_at(335, 356)
+            #    bot.click_at(114, 790)
             #    bot.swipe()
             #    time.sleep(1)  # Prevent multiple swipes within same second
-            if keyboard.is_pressed("esc") and bot.is_mouse_inside_window():
-                print("🛑 Escape gedrukt binnen venster — script wordt gestopt.")
-                sys.exit()
+            #if keyboard.is_pressed("esc") and bot.is_mouse_inside_window():
+            #    print("🛑 Escape gedrukt binnen venster — script wordt gestopt.")
+            #    sys.exit()
 
 
             bot.act_on_template("help_button.png")
             bot.act_on_template("survivor_found.png")
             bot.act_on_template("survivor_claim.png", 2)
 
+            #bot.act_on_template("exit.png")
+
             #zombie invasion event
-            if bot.act_on_template("target.png"):
-                time.sleep(0.3)
-                print("clicked target")
-                bot.click_at(335, 356)
-                print("clicked join")
-                time.sleep(0.75)
-                bot.act_on_template("march.png")
-                print("clicked march")
-                time.sleep(5)
+            #if bot.act_on_template("target.png"):
+            #    time.sleep(0.3)
+            #    print("clicked target")
+            #    bot.click_at(335, 356)
+            #    print("clicked join")
+            #    time.sleep(0.75)
+            #    bot.click_at(bot.getCenter_x(), 870)
+            #    print("clicked march")
+            #    time.sleep(5)
 
             if bot.act_on_template("open_dig.png"):
                 time.sleep(0.5)
